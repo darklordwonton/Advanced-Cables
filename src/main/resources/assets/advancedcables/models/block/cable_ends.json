@@ -1,0 +1,20 @@
+{
+    "textures": {
+        "particle": "#cableend"
+    },
+    "elements": [
+        {
+            "name": "Ends",
+            "from": [ 5.0, 5.0, 0.0 ], 
+            "to": [ 11.0, 11.0, 5.0 ], 
+            "faces": {
+                "north": { "texture": "#cablecap", "uv": [ 0.0, 0.0, 12.0, 12.0 ] },
+                "east": { "texture": "#cableend", "uv": [ 0.0, 6.0, 12.0, 16.0 ], "rotation": 90 },
+                "south": { "texture": "#cablecap", "uv": [ 0.0, 0.0, 12.0, 12.0 ] },
+                "west": { "texture": "#cableend", "uv": [ 0.0, 6.0, 12.0, 16.0 ], "rotation": 270 },
+                "up": { "texture": "#cableend", "uv": [ 0.0, 6.0, 12.0, 16.0 ] },
+                "down": { "texture": "#cableend", "uv": [ 0.0, 6.0, 12.0, 16.0 ], "rotation": 180 }
+            }
+        }
+    ]
+}

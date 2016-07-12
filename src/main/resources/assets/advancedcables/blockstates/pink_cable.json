@@ -1,0 +1,129 @@
+{
+    "forge_marker": 1,
+    "defaults": {
+        "model": "advancedcables:cable_centre",
+        "textures": {
+            "cable" : "advancedcables:pink_texture"
+        },
+        "uvlock": false
+    },
+    "variants": {
+        "normal": [{
+            "model": "advancedcables:pink_cable"
+        }],
+        "down": {
+            0: {
+                "submodel": {
+                    "cable_down": { "model": "advancedcables:cable_ends", "textures" : { "cableend" : "advancedcables:pink_texture", "cablecap" : "advancedcables:pink_texture" }, "x": 90 }
+               }
+            },
+            1: {
+                "submodel": {
+                    "cable_down": { "model": "advancedcables:cable_ends", "textures" : { "cableend" : "advancedcables:pink_in_texture", "cablecap" : "advancedcables:pink_texture" }, "x": 90 }
+               }
+            },
+            2: {
+                "submodel": {
+                    "cable_down": { "model": "advancedcables:cable_ends", "textures" : { "cableend" : "advancedcables:pink_out_texture", "cablecap" : "advancedcables:pink_texture" }, "x": 90 }
+               }
+            },
+            3: {
+            }
+        },
+        "east": {
+            0: {
+                "submodel": {
+                    "cable_east": { "model": "advancedcables:cable_ends", "textures" : { "cableend" : "advancedcables:pink_texture", "cablecap" : "advancedcables:pink_texture" }, "y": 90 }
+               }
+            },
+            1: {
+                "submodel": {
+                    "cable_east": { "model": "advancedcables:cable_ends", "textures" : { "cableend" : "advancedcables:pink_in_texture", "cablecap" : "advancedcables:pink_texture" }, "y": 90 }
+               }
+            },
+            2: {
+                "submodel": {
+                    "cable_east": { "model": "advancedcables:cable_ends", "textures" : { "cableend" : "advancedcables:pink_out_texture", "cablecap" : "advancedcables:pink_texture" }, "y": 90 }
+               }
+            },
+            3: {
+            }
+        },
+        "north": {
+            0: {
+                "submodel": {
+                    "cable_north": { "model": "advancedcables:cable_ends", "textures" : { "cableend" : "advancedcables:pink_texture", "cablecap" : "advancedcables:pink_texture" }, "y": 0 }
+               }
+            },
+            1: {
+                "submodel": {
+                    "cable_north": { "model": "advancedcables:cable_ends", "textures" : { "cableend" : "advancedcables:pink_in_texture", "cablecap" : "advancedcables:pink_texture" }, "y": 0 }
+               }
+            },
+            2: {
+                "submodel": {
+                    "cable_north": { "model": "advancedcables:cable_ends", "textures" : { "cableend" : "advancedcables:pink_out_texture", "cablecap" : "advancedcables:pink_texture" }, "y": 0 }
+               }
+            },
+            3: {
+            }
+        },
+        "south": {
+            0: {
+                "submodel": {
+                    "cable_south": { "model": "advancedcables:cable_ends", "textures" : { "cableend" : "advancedcables:pink_texture", "cablecap" : "advancedcables:pink_texture" }, "y": 180 }
+               }
+            },
+            1: {
+                "submodel": {
+                    "cable_south": { "model": "advancedcables:cable_ends", "textures" : { "cableend" : "advancedcables:pink_in_texture", "cablecap" : "advancedcables:pink_texture" }, "y": 180 }
+               }
+            },
+            2: {
+                "submodel": {
+                    "cable_south": { "model": "advancedcables:cable_ends", "textures" : { "cableend" : "advancedcables:pink_out_texture", "cablecap" : "advancedcables:pink_texture" }, "y": 180 }
+               }
+            },
+            3: {
+            }
+        },
+        "up": {
+            0: {
+                "submodel": {
+                    "cable_up": { "model": "advancedcables:cable_ends", "textures" : { "cableend" : "advancedcables:pink_texture", "cablecap" : "advancedcables:pink_texture" }, "x": 270 }
+               }
+            },
+            1: {
+                "submodel": {
+                    "cable_up": { "model": "advancedcables:cable_ends", "textures" : { "cableend" : "advancedcables:pink_in_texture", "cablecap" : "advancedcables:pink_texture" }, "x": 270 }
+               }
+            },
+            2: {
+                "submodel": {
+                    "cable_up": { "model": "advancedcables:cable_ends", "textures" : { "cableend" : "advancedcables:pink_out_texture", "cablecap" : "advancedcables:pink_texture" }, "x": 270 }
+               }
+            },
+            3: {
+            }
+        },
+        "west": {
+            0: {
+                "submodel": {
+                    "cable_west": { "model": "advancedcables:cable_ends", "textures" : { "cableend" : "advancedcables:pink_texture", "cablecap" : "advancedcables:pink_texture" }, "y": 270 }
+               }
+            },
+            1: {
+                "submodel": {
+                    "cable_west": { "model": "advancedcables:cable_ends", "textures" : { "cableend" : "advancedcables:pink_in_texture", "cablecap" : "advancedcables:pink_texture" }, "y": 270 }
+               }
+            },
+            2: {
+                "submodel": {
+                    "cable_west": { "model": "advancedcables:cable_ends", "textures" : { "cableend" : "advancedcables:pink_out_texture", "cablecap" : "advancedcables:pink_texture" }, "y": 270 }
+               }
+            },
+            3: {
+            }
+        }
+    }
+}

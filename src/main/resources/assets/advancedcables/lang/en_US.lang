@@ -1,0 +1,17 @@
+death.attack.electric=%1$s suffered a shocking fate
+tile.copper_cable.name=Copper Cable
+tile.covered_copper_cable.name=Covered Copper Cable
+tile.tin_cable.name=Tin Cable
+tile.covered_tin_cable.name=Covered Tin Cable
+tile.silver_cable.name=Silver Cable
+tile.covered_silver_cable.name=Covered Silver Cable
+tile.gold_cable.name=Gold Cable
+tile.covered_gold_cable.name=Covered Gold Cable
+tile.pink_cable.name=Pink Cable
+tile.covered_pink_cable.name=Covered Pink Cable
+tile.ender_cable.name=Ender-Flux Cable
+tile.covered_ender_cable.name=Covered Ender-Flux Cable
+tile.optic_cable.name=Fibre-Optic Cable
+tile.super_cable.name=Superconductive Cable
+tile.covered_super_cable.name=Covered Superconductive Cable
+itemGroup.tabadvancedcables=Advanced Cables

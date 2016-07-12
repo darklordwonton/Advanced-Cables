@@ -1,0 +1,20 @@
+{
+    "textures": {
+        "particle": "#cable"
+    },
+    "elements": [
+        {
+            "name": "Centre",
+            "from": [ 5.0, 5.0, 5.0 ], 
+            "to": [ 11.0, 11.0, 11.0 ], 
+            "faces": {
+                "north": { "texture": "#cable", "uv": [ 0.0, 0.0, 12.0, 12.0 ] },
+                "east": { "texture": "#cable", "uv": [ 0.0, 0.0, 12.0, 12.0 ] },
+                "south": { "texture": "#cable", "uv": [ 0.0, 0.0, 12.0, 12.0 ] },
+                "west": { "texture": "#cable", "uv": [ 0.0, 0.0, 12.0, 12.0 ] },
+                "up": { "texture": "#cable", "uv": [ 0.0, 0.0, 12.0, 12.0 ] },
+                "down": { "texture": "#cable", "uv": [ 0.0, 0.0, 12.0, 12.0 ] }
+            }
+        }
+    ]
+}
