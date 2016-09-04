@@ -1,14 +1,14 @@
 [
 {
-  "modid": "examplemod",
-  "name": "Example Mod",
-  "description": "Example placeholder mod.",
+  "modid": "advancedcables",
+  "name": "Advanced Cables",
+  "description": "A little mod I made that adds a more interesting way to transfer rf.",
   "version": "${version}",
-  "mcversion": "${mcversion}",
+  "mcversion": "1.9.4/1.10.2",
   "url": "",
   "updateUrl": "",
-  "authorList": ["ExampleDude"],
-  "credits": "The Forge and FML guys, for making this example",
+  "authorList": ["gggamer"],
+  "credits": "gggamer",
   "logoFile": "",
   "screenshots": [],
   "dependencies": []

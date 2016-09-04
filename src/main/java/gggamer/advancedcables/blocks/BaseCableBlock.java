@@ -32,12 +32,12 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class BaseCableBlock extends Block{
 	
-	static final IProperty<Integer> down = PropertyInteger.create("down", 0, 3);
-	static final IProperty<Integer> up = PropertyInteger.create("up", 0, 3);
-	static final IProperty<Integer> north = PropertyInteger.create("north", 0, 3);
-	static final IProperty<Integer> south = PropertyInteger.create("south", 0, 3);
-	static final IProperty<Integer> west = PropertyInteger.create("west", 0, 3);
-	static final IProperty<Integer> east = PropertyInteger.create("east", 0, 3);
+	static final IProperty<Boolean> down = PropertyBool.create("down");
+	static final IProperty<Boolean> up = PropertyBool.create("up");
+	static final IProperty<Boolean> north = PropertyBool.create("north");
+	static final IProperty<Boolean> south = PropertyBool.create("south");
+	static final IProperty<Boolean> west = PropertyBool.create("west");
+	static final IProperty<Boolean> east = PropertyBool.create("east");
 	protected AxisAlignedBB boundbox;
 	protected int lookingSide;
 
@@ -166,11 +166,11 @@ public class BaseCableBlock extends Block{
     public IBlockState getActualState(IBlockState state, IBlockAccess world, BlockPos pos)
     {
 		CableTileEntity tileEntity = (CableTileEntity) world.getTileEntity(pos);
-        return state.withProperty(down, ((Integer)tileEntity.rendersides.get(0)).intValue())
-        .withProperty(up, ((Integer)tileEntity.rendersides.get(1)).intValue())
-        .withProperty(north, ((Integer)tileEntity.rendersides.get(2)).intValue())
-        .withProperty(south, ((Integer)tileEntity.rendersides.get(3)).intValue())
-        .withProperty(west, ((Integer)tileEntity.rendersides.get(4)).intValue())
-        .withProperty(east, ((Integer)tileEntity.rendersides.get(5)).intValue());
+        return state.withProperty(down, ((Integer)tileEntity.rendersides.get(0)).intValue() < 3)
+        .withProperty(up, ((Integer)tileEntity.rendersides.get(1)).intValue() < 3)
+        .withProperty(north, ((Integer)tileEntity.rendersides.get(2)).intValue() < 3)
+        .withProperty(south, ((Integer)tileEntity.rendersides.get(3)).intValue() < 3)
+        .withProperty(west, ((Integer)tileEntity.rendersides.get(4)).intValue() < 3)
+        .withProperty(east, ((Integer)tileEntity.rendersides.get(5)).intValue() < 3);
     }
 }

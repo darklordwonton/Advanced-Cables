@@ -8,6 +8,7 @@ import javax.annotation.Nullable;
 import cofh.api.energy.EnergyStorage;
 import cofh.api.energy.IEnergyConnection;
 import cofh.api.energy.IEnergyHandler;
+import cofh.api.energy.IEnergyProvider;
 import cofh.api.energy.IEnergyReceiver;
 import cofh.api.energy.TileEnergyHandler;
 import gggamer.advancedcables.AdvancedCablesMain;
@@ -78,7 +79,12 @@ public class CableTileEntity extends TileEntity implements ITickable, IEnergyHan
 				this.worldObj.setBlockState(this.getPos(), state);
 				this.worldObj.removeTileEntity(this.getPos());
 			}
-			sidesReceivedFrom.add(from);
+			if (energyReceived > 0) {
+				sidesReceivedFrom.add(from);
+			}
+			if ((!covered) && this.storage.getEnergyStored() > 0) {
+				this.shockEntities();
+			}
 			return energyReceived;
 		} else {
 			return 0;
@@ -88,7 +94,7 @@ public class CableTileEntity extends TileEntity implements ITickable, IEnergyHan
 	@Override
 	public int extractEnergy(EnumFacing from, int maxExtract, boolean simulate) {
 		if ((Integer)sides.get(from.getIndex()) == 0 || (Integer)sides.get(from.getIndex()) == 2) {
-			return storage.extractEnergy(maxExtract, simulate) - loss;
+			return Math.max(0, storage.extractEnergy(maxExtract, simulate) - loss);
 		} else {
 			return 0;
 		}
@@ -97,9 +103,6 @@ public class CableTileEntity extends TileEntity implements ITickable, IEnergyHan
 	@Override
 	public void update() {
 		List sidesPoweredTo = new ArrayList();
-		if ((!covered) && this.storage.getEnergyStored() > 0) {
-			this.shockEntities();
-		}
 		if (sides.size() != 6) {
 			for (int i = 0; i < 6; i++) {
 				sides.add(0);
@@ -107,6 +110,18 @@ public class CableTileEntity extends TileEntity implements ITickable, IEnergyHan
 		}
 		float powerSplit = 0;
 		rendersides.clear();
+		for (int i = 0; i < 6; i++) {
+			EnumFacing side = EnumFacing.getFront(i);
+			Vec3i offset = new Vec3i(side.getFrontOffsetX(), side.getFrontOffsetY(), side.getFrontOffsetZ());
+			if (!(sidesReceivedFrom.contains(side))) {
+				if (this.worldObj.getTileEntity(this.getPos().add(offset)) != null) {
+					TileEntity tileEntity = this.worldObj.getTileEntity(this.getPos().add(offset));
+					if (tileEntity instanceof IEnergyProvider && ((IEnergyProvider)tileEntity).canConnectEnergy(side.getOpposite()) && this.canConnectEnergy(side)){
+						this.receiveEnergy(side, ((IEnergyProvider)tileEntity).extractEnergy(side.getOpposite(), ((IEnergyProvider)tileEntity).getMaxEnergyStored(side.getOpposite()), false), false);
+					}
+				}
+			}
+		}
 		for (int i = 0; i < 6; i++) {
 			EnumFacing side = EnumFacing.getFront(i);
 			Vec3i offset = new Vec3i(side.getFrontOffsetX(), side.getFrontOffsetY(), side.getFrontOffsetZ());
@@ -207,13 +222,13 @@ public class CableTileEntity extends TileEntity implements ITickable, IEnergyHan
 	}
 	
 	public void shockEntities() {
-		float rangeMultiplier = 0.25f + (float) Math.sqrt(this.storage.getEnergyStored())/1024;
+		float rangeMultiplier = 0.25f + (float) Math.sqrt(this.storage.getEnergyStored())/256;
 		BlockPos rangeOffset = new BlockPos(rangeMultiplier,rangeMultiplier,rangeMultiplier);
 		BlockPos maxOffset = new BlockPos(1,1,1);
 		AxisAlignedBB range = new AxisAlignedBB(this.pos.subtract(rangeOffset),this.pos.add(maxOffset).add(rangeOffset));
 		List entities = this.worldObj.getEntitiesWithinAABB(EntityLivingBase.class, range);
 		for (int i = 0; i < entities.size(); i++) {
-			((EntityLivingBase) entities.get(i)).attackEntityFrom(AdvancedCablesMain.electrocution, (float) Math.sqrt(this.storage.getEnergyStored())/8);
+			((EntityLivingBase) entities.get(i)).attackEntityFrom(AdvancedCablesMain.electrocution, (float) Math.sqrt(this.storage.getEnergyStored())/4);
 		}
 	}
 	
