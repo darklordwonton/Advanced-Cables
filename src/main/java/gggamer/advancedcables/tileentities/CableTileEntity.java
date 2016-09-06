@@ -17,12 +17,18 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
+import net.minecraft.init.SoundEvents;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
+import net.minecraft.potion.Potion;
+import net.minecraft.potion.PotionEffect;
+import net.minecraft.potion.PotionHealth;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.ITickable;
+import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3i;
@@ -31,7 +37,7 @@ import net.minecraft.util.text.TextComponentBase;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 
-public class CableTileEntity extends TileEntity implements ITickable, IEnergyHandler {
+public class CableTileEntity extends TileEntity implements ITickable, IEnergyReceiver, IEnergyProvider {
 	
 	protected EnergyStorage storage = new EnergyStorage(Integer.MAX_VALUE);
 	public int maxCapacity;
@@ -82,9 +88,6 @@ public class CableTileEntity extends TileEntity implements ITickable, IEnergyHan
 			if (energyReceived > 0) {
 				sidesReceivedFrom.add(from);
 			}
-			if ((!covered) && this.storage.getEnergyStored() > 0) {
-				this.shockEntities();
-			}
 			return energyReceived;
 		} else {
 			return 0;
@@ -121,6 +124,9 @@ public class CableTileEntity extends TileEntity implements ITickable, IEnergyHan
 					}
 				}
 			}
+		}
+		if ((!covered) && this.storage.getEnergyStored() > 0) {
+			this.shockEntities();
 		}
 		for (int i = 0; i < 6; i++) {
 			EnumFacing side = EnumFacing.getFront(i);
@@ -222,14 +228,29 @@ public class CableTileEntity extends TileEntity implements ITickable, IEnergyHan
 	}
 	
 	public void shockEntities() {
-		float rangeMultiplier = 0.25f + (float) Math.sqrt(this.storage.getEnergyStored())/256;
+		float rangeMultiplier = 0.25f + (float) Math.sqrt(this.storage.getEnergyStored())/512;
 		BlockPos rangeOffset = new BlockPos(rangeMultiplier,rangeMultiplier,rangeMultiplier);
 		BlockPos maxOffset = new BlockPos(1,1,1);
 		AxisAlignedBB range = new AxisAlignedBB(this.pos.subtract(rangeOffset),this.pos.add(maxOffset).add(rangeOffset));
 		List entities = this.worldObj.getEntitiesWithinAABB(EntityLivingBase.class, range);
 		for (int i = 0; i < entities.size(); i++) {
-			((EntityLivingBase) entities.get(i)).attackEntityFrom(AdvancedCablesMain.electrocution, (float) Math.sqrt(this.storage.getEnergyStored())/4);
+			shock((EntityLivingBase) entities.get(i), (float) Math.sqrt(this.storage.getEnergyStored())/4);
 		}
+		rangeOffset = new BlockPos(rangeMultiplier * 8 + 2,rangeMultiplier * 8 + 2,rangeMultiplier * 8 + 2);
+		range = new AxisAlignedBB(this.pos.subtract(rangeOffset),this.pos.add(maxOffset).add(rangeOffset));
+		entities = this.worldObj.getEntitiesWithinAABB(EntityLivingBase.class, range);
+		for (int i = 0; i < entities.size(); i++) {
+			((EntityLivingBase) entities.get(i)).addPotionEffect(new PotionEffect(Potion.getPotionById(17), 10, 3, true, false));
+		}
+	}
+	
+	public void shock(EntityLivingBase target, float damage) {
+		target.attackEntityFrom(AdvancedCablesMain.electrocution, damage);
+		target.setFire(10);
+		this.getWorld().playSound(null, target.getPosition(), SoundEvents.BLOCK_NOTE_SNARE, SoundCategory.BLOCKS, 1.0f, 1.0f);
+		target.addPotionEffect(new PotionEffect(Potion.getPotionById(2), 2, 6, true, false));
+		target.addPotionEffect(new PotionEffect(Potion.getPotionById(4), 2, 3, true, false));
+		target.addPotionEffect(new PotionEffect(Potion.getPotionById(8), 2, -10, true, false));
 	}
 	
 	public void incrementSide (int side, EntityPlayer player, World world) {
@@ -239,6 +260,9 @@ public class CableTileEntity extends TileEntity implements ITickable, IEnergyHan
 		}
 		if (world.isRemote) {
 			player.addChatComponentMessage(new TextComponentString(EnumFacing.getFront(side) + " side set to " + sideStates[(Integer)sides.get(side)]));
+		}
+		if (!this.covered && this.storage.getEnergyStored() > 0) {
+			shock(player, (float) Math.sqrt(this.storage.getEnergyStored())/4);
 		}
 	}
 	
@@ -325,13 +349,11 @@ public class CableTileEntity extends TileEntity implements ITickable, IEnergyHan
 
 	@Override
 	public int getEnergyStored(EnumFacing from) {
-		// TODO Auto-generated method stub
 		return storage.getEnergyStored();
 	}
 
 	@Override
 	public int getMaxEnergyStored(EnumFacing from) {
-		// TODO Auto-generated method stub
 		return storage.getMaxEnergyStored();
 	}
 }

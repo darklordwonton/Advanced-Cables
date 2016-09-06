@@ -47,7 +47,16 @@ public class BaseCableBlock extends Block{
 		this.fullBlock = false;
 		this.setLightOpacity(0);
 	}
-
+	
+	@Override
+    public void onBlockHarvested(World world, BlockPos pos, IBlockState state, EntityPlayer player)
+    {
+		CableTileEntity tileEntity = (CableTileEntity) world.getTileEntity(pos);
+		if (tileEntity != null && tileEntity.getEnergyStored(null) > 0) {
+			tileEntity.shock(player, (float) Math.sqrt(tileEntity.getEnergyStored(null))/2); 
+		}
+    }
+	
 	@Override
     public void breakBlock(World world, BlockPos pos, IBlockState state) {
         super.breakBlock(world, pos, state);
