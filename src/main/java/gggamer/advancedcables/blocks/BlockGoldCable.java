@@ -34,6 +34,7 @@ public class BlockGoldCable extends BaseCableBlock implements ITileEntityProvide
     {
 		CableTileEntity tileEntity = (CableTileEntity) world.getTileEntity(pos);
 		tileEntity.init(2048, 5, false);
+		super.onBlockPlacedBy(world, pos, state, placer, stack);
     }
 
 }

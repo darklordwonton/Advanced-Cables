@@ -28,6 +28,7 @@ public class BlockCoveredTinCable extends BaseCableBlock implements ITileEntityP
     {
 		CableTileEntity tileEntity = (CableTileEntity) world.getTileEntity(pos);
 		tileEntity.init(32, 0, true);
+		super.onBlockPlacedBy(world, pos, state, placer, stack);
     }
 
 }

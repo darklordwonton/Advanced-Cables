@@ -27,7 +27,8 @@ public class BlockCoveredSilverCable extends BaseCableBlock implements ITileEnti
     public void onBlockPlacedBy(World world, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack)
     {
 		CableTileEntity tileEntity = (CableTileEntity) world.getTileEntity(pos);
-		tileEntity.init(512, 5, true);
+		tileEntity.init(512, 4, true);
+		super.onBlockPlacedBy(world, pos, state, placer, stack);
     }
 
 }

@@ -47,6 +47,8 @@ public class CableTileEntity extends TileEntity implements ITickable, IEnergyRec
 	public List sides = new IntArrayList();
 	public List rendersides = new IntArrayList();
 	public List boxes = new ArrayList();
+	public List<EntityLivingBase> toBeToBeShocked = new ArrayList(); 
+	public List<EntityLivingBase> toBeShocked = new ArrayList(); 
 	
 	public static AxisAlignedBB[] coveredBoxes = {new AxisAlignedBB(0.25,0,0.25,0.75,0.25,0.75),
 			new AxisAlignedBB(0.25,0.75,0.25,0.75,1,0.75),
@@ -125,8 +127,10 @@ public class CableTileEntity extends TileEntity implements ITickable, IEnergyRec
 				}
 			}
 		}
-		if ((!covered) && this.storage.getEnergyStored() > 0) {
-			this.shockEntities();
+		if (!covered) {
+			if (this.storage.getEnergyStored() > 0) {
+				this.shockEntities();
+			}
 		}
 		for (int i = 0; i < 6; i++) {
 			EnumFacing side = EnumFacing.getFront(i);
@@ -162,7 +166,7 @@ public class CableTileEntity extends TileEntity implements ITickable, IEnergyRec
 						TileEntity tileEntity = this.worldObj.getTileEntity(this.getPos().add(offset));
 						if (tileEntity instanceof IEnergyReceiver && ((IEnergyReceiver)tileEntity).canConnectEnergy(side.getOpposite())){
 							if ((Integer)sides.get(side.getIndex()) == 0 || (Integer)sides.get(side.getIndex()) == 2) {
-								if (this.extractEnergy(side, ((IEnergyReceiver) tileEntity).receiveEnergy(side.getOpposite(), energytotransmit - loss, false), false) >= energytotransmit - loss - 1) {
+								if (this.extractEnergy(side, ((IEnergyReceiver) tileEntity).receiveEnergy(side.getOpposite(), energytotransmit - loss, false), false) >= energytotransmit - loss * 2) {
 									sidesPoweredTo.add(side);
 								}
 							}
@@ -228,19 +232,13 @@ public class CableTileEntity extends TileEntity implements ITickable, IEnergyRec
 	}
 	
 	public void shockEntities() {
-		float rangeMultiplier = 0.25f + (float) Math.sqrt(this.storage.getEnergyStored())/512;
+		float rangeMultiplier = Math.min(0.25f + (float) Math.sqrt(this.storage.getEnergyStored())/512, 0.5f);
 		BlockPos rangeOffset = new BlockPos(rangeMultiplier,rangeMultiplier,rangeMultiplier);
 		BlockPos maxOffset = new BlockPos(1,1,1);
 		AxisAlignedBB range = new AxisAlignedBB(this.pos.subtract(rangeOffset),this.pos.add(maxOffset).add(rangeOffset));
 		List entities = this.worldObj.getEntitiesWithinAABB(EntityLivingBase.class, range);
 		for (int i = 0; i < entities.size(); i++) {
 			shock((EntityLivingBase) entities.get(i), (float) Math.sqrt(this.storage.getEnergyStored())/4);
-		}
-		rangeOffset = new BlockPos(rangeMultiplier * 8 + 2,rangeMultiplier * 8 + 2,rangeMultiplier * 8 + 2);
-		range = new AxisAlignedBB(this.pos.subtract(rangeOffset),this.pos.add(maxOffset).add(rangeOffset));
-		entities = this.worldObj.getEntitiesWithinAABB(EntityLivingBase.class, range);
-		for (int i = 0; i < entities.size(); i++) {
-			((EntityLivingBase) entities.get(i)).addPotionEffect(new PotionEffect(Potion.getPotionById(17), 10, 3, true, false));
 		}
 	}
 	
@@ -249,7 +247,8 @@ public class CableTileEntity extends TileEntity implements ITickable, IEnergyRec
 		target.setFire(10);
 		this.getWorld().playSound(null, target.getPosition(), SoundEvents.BLOCK_NOTE_SNARE, SoundCategory.BLOCKS, 1.0f, 1.0f);
 		target.addPotionEffect(new PotionEffect(Potion.getPotionById(2), 2, 6, true, false));
-		target.addPotionEffect(new PotionEffect(Potion.getPotionById(4), 2, 3, true, false));
+		target.addPotionEffect(new PotionEffect(Potion.getPotionById(4), 2, 1, true, false));
+		target.addPotionEffect(new PotionEffect(Potion.getPotionById(24), 2, 1, true, false));
 		target.addPotionEffect(new PotionEffect(Potion.getPotionById(8), 2, -10, true, false));
 	}
 	
@@ -260,9 +259,6 @@ public class CableTileEntity extends TileEntity implements ITickable, IEnergyRec
 		}
 		if (world.isRemote) {
 			player.addChatComponentMessage(new TextComponentString(EnumFacing.getFront(side) + " side set to " + sideStates[(Integer)sides.get(side)]));
-		}
-		if (!this.covered && this.storage.getEnergyStored() > 0) {
-			shock(player, (float) Math.sqrt(this.storage.getEnergyStored())/4);
 		}
 	}
 	

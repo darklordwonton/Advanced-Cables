@@ -37,7 +37,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @Mod(modid = AdvancedCablesMain.MODID, version = AdvancedCablesMain.VERSION, name = AdvancedCablesMain.NAME)
 public class AdvancedCablesMain {
 	static final String MODID = "advancedcables";
-	static final String VERSION = "1.1.0";
+	static final String VERSION = "1.2.1";
 	static final String NAME = "advancedcables";
 	
 	public static final DamageSource electrocution = new DamageSource("electric")

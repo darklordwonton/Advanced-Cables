@@ -7,6 +7,7 @@ import javax.annotation.Nullable;
 
 import gggamer.advancedcables.tileentities.CableTileEntity;
 import net.minecraft.block.Block;
+import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyBool;
@@ -16,8 +17,13 @@ import net.minecraft.block.state.IBlockProperties;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.RenderGlobal;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
+import net.minecraft.item.Item;
+import net.minecraft.item.Item.ToolMaterial;
+import net.minecraft.item.ItemBlock;
+import net.minecraft.item.ItemShears;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
@@ -42,18 +48,21 @@ public class BaseCableBlock extends Block{
 	protected int lookingSide;
 
 	public BaseCableBlock(Material materialIn) {
-		super(materialIn);
+		super(Material.LEAVES);
 		// TODO Auto-generated constructor stub
+		this.setSoundType(SoundType.METAL);
 		this.fullBlock = false;
 		this.setLightOpacity(0);
+		this.setHardness(0.2f);
+		this.setHarvestLevel("shears", 0);
 	}
 	
 	@Override
     public void onBlockHarvested(World world, BlockPos pos, IBlockState state, EntityPlayer player)
     {
 		CableTileEntity tileEntity = (CableTileEntity) world.getTileEntity(pos);
-		if (tileEntity != null && tileEntity.getEnergyStored(null) > 0) {
-			tileEntity.shock(player, (float) Math.sqrt(tileEntity.getEnergyStored(null))/2); 
+		if (tileEntity != null && tileEntity.getEnergyStored(null) > 0 && !tileEntity.covered) {
+			tileEntity.shock(player, (float) Math.sqrt(tileEntity.getEnergyStored(null))); 
 		}
     }
 	
@@ -160,8 +169,12 @@ public class BaseCableBlock extends Block{
     public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, @Nullable ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ)
     {
     	if (player.inventory.getCurrentItem() != null) {
-    		if (player.inventory.getCurrentItem().getItem() == Items.SHEARS) {
-    			CableTileEntity tileEntity = (CableTileEntity) world.getTileEntity(pos);
+    		Item item = player.inventory.getCurrentItem().getItem();
+    		CableTileEntity tileEntity = (CableTileEntity) world.getTileEntity(pos);
+    		if (item instanceof ItemShears) {
+        		if (!tileEntity.covered && tileEntity.getEnergyStored(null) > 0) {
+        			tileEntity.shock(player, (float) Math.sqrt(tileEntity.getEnergyStored(null)));
+        		}
     			tileEntity.incrementSide(this.lookingSide, player, world);
     			world.markBlockRangeForRenderUpdate(pos, pos.add(1,1,1));
     			return true;
@@ -182,4 +195,7 @@ public class BaseCableBlock extends Block{
         .withProperty(west, ((Integer)tileEntity.rendersides.get(4)).intValue() < 3)
         .withProperty(east, ((Integer)tileEntity.rendersides.get(5)).intValue() < 3);
     }
+	
+	@Override
+    public void onBlockPlacedBy(World world, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack) {}
 }

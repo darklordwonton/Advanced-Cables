@@ -34,6 +34,7 @@ public class BlockPinkCable extends BaseCableBlock implements ITileEntityProvide
     {
 		CableTileEntity tileEntity = (CableTileEntity) world.getTileEntity(pos);
 		tileEntity.init(8192, 15, false);
+		super.onBlockPlacedBy(world, pos, state, placer, stack);
     }
 
 }
