@@ -49,6 +49,7 @@ public class CableTileEntity extends TileEntity implements ITickable, IEnergyRec
 	public List boxes = new ArrayList();
 	public List<EntityLivingBase> toBeToBeShocked = new ArrayList(); 
 	public List<EntityLivingBase> toBeShocked = new ArrayList(); 
+	public int currentPower;
 	
 	public static AxisAlignedBB[] coveredBoxes = {new AxisAlignedBB(0.25,0,0.25,0.75,0.25,0.75),
 			new AxisAlignedBB(0.25,0.75,0.25,0.75,1,0.75),
@@ -127,6 +128,7 @@ public class CableTileEntity extends TileEntity implements ITickable, IEnergyRec
 				}
 			}
 		}
+		this.currentPower = this.getEnergyStored(null);
 		if (!covered) {
 			if (this.storage.getEnergyStored() > 0) {
 				this.shockEntities();
@@ -229,6 +231,10 @@ public class CableTileEntity extends TileEntity implements ITickable, IEnergyRec
 		
 		sidesReceivedFrom.clear();
 		this.storage.setEnergyStored(0);
+	}
+	
+	public int getCurrentPower() {
+		return this.currentPower;
 	}
 	
 	public void shockEntities() {

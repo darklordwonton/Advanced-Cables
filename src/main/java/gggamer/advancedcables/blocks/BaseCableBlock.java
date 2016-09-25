@@ -62,7 +62,7 @@ public class BaseCableBlock extends Block{
     {
 		CableTileEntity tileEntity = (CableTileEntity) world.getTileEntity(pos);
 		if (tileEntity != null && tileEntity.getEnergyStored(null) > 0 && !tileEntity.covered) {
-			tileEntity.shock(player, (float) Math.sqrt(tileEntity.getEnergyStored(null))); 
+			tileEntity.shock(player, (float) Math.sqrt(tileEntity.getCurrentPower())); 
 		}
     }
 	
@@ -173,7 +173,7 @@ public class BaseCableBlock extends Block{
     		CableTileEntity tileEntity = (CableTileEntity) world.getTileEntity(pos);
     		if (item instanceof ItemShears) {
         		if (!tileEntity.covered && tileEntity.getEnergyStored(null) > 0) {
-        			tileEntity.shock(player, (float) Math.sqrt(tileEntity.getEnergyStored(null)));
+        			tileEntity.shock(player, (float) Math.sqrt(tileEntity.getCurrentPower()));
         		}
     			tileEntity.incrementSide(this.lookingSide, player, world);
     			world.markBlockRangeForRenderUpdate(pos, pos.add(1,1,1));

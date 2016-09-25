@@ -27,6 +27,7 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
+import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -36,8 +37,11 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 @Mod(modid = AdvancedCablesMain.MODID, version = AdvancedCablesMain.VERSION, name = AdvancedCablesMain.NAME)
 public class AdvancedCablesMain {
+	@SidedProxy(clientSide = "gggamer.advancedcables.ClientProxy", serverSide = "gggamer.advancedcables.ServerProxy")
+	public static CommonProxy proxy;
+	
 	static final String MODID = "advancedcables";
-	static final String VERSION = "1.2.1";
+	static final String VERSION = "1.2.2";
 	static final String NAME = "advancedcables";
 	
 	public static final DamageSource electrocution = new DamageSource("electric")
@@ -183,103 +187,11 @@ public class AdvancedCablesMain {
 	
 	@EventHandler
 	public void preinit(FMLPreInitializationEvent event) {
-		
-		GameRegistry.registerTileEntity(CableTileEntity.class, "copper_cable");
-		GameRegistry.registerTileEntity(CableTileEntity.class, "covered_copper_cable");
-		GameRegistry.registerTileEntity(CableTileEntity.class, "tin_cable");
-		GameRegistry.registerTileEntity(CableTileEntity.class, "covered_tin_cable");
-		GameRegistry.registerTileEntity(CableTileEntity.class, "silver_cable");
-		GameRegistry.registerTileEntity(CableTileEntity.class, "covered_silver_cable");
-		GameRegistry.registerTileEntity(CableTileEntity.class, "gold_cable");
-		GameRegistry.registerTileEntity(CableTileEntity.class, "covered_gold_cable");
-		GameRegistry.registerTileEntity(CableTileEntity.class, "pink_cable");
-		GameRegistry.registerTileEntity(CableTileEntity.class, "covered_pink_cable");
-		GameRegistry.registerTileEntity(CableTileEntity.class, "ender_cable");
-		GameRegistry.registerTileEntity(CableTileEntity.class, "covered_ender_cable");
-		GameRegistry.registerTileEntity(CableTileEntity.class, "optic_cable");
-		GameRegistry.registerTileEntity(CableTileEntity.class, "super_cable");
-		GameRegistry.registerTileEntity(CableTileEntity.class, "covered_super_cable");
-		
-		TileEntity.addMapping(CableTileEntity.class, "cable");
-		
-		GameRegistry.register(copper_cable);
-		GameRegistry.register(icopper_cable);
-		GameRegistry.register(covered_copper_cable);
-		GameRegistry.register(icovered_copper_cable);
-		GameRegistry.register(tin_cable);
-		GameRegistry.register(itin_cable);
-		GameRegistry.register(covered_tin_cable);
-		GameRegistry.register(icovered_tin_cable);
-		GameRegistry.register(silver_cable);
-		GameRegistry.register(isilver_cable);
-		GameRegistry.register(covered_silver_cable);
-		GameRegistry.register(icovered_silver_cable);
-		GameRegistry.register(gold_cable);
-		GameRegistry.register(igold_cable);
-		GameRegistry.register(covered_gold_cable);
-		GameRegistry.register(icovered_gold_cable);
-		GameRegistry.register(pink_cable);
-		GameRegistry.register(ipink_cable);
-		GameRegistry.register(covered_pink_cable);
-		GameRegistry.register(icovered_pink_cable);
-		GameRegistry.register(ender_cable);
-		GameRegistry.register(iender_cable);
-		GameRegistry.register(covered_ender_cable);
-		GameRegistry.register(icovered_ender_cable);
-		GameRegistry.register(optic_cable);
-		GameRegistry.register(ioptic_cable);
-		GameRegistry.register(super_cable);
-		GameRegistry.register(isuper_cable);
-		GameRegistry.register(covered_super_cable);
-		GameRegistry.register(icovered_super_cable);
+		proxy.preinit(event);
 	}
 	
 	@EventHandler
 	public void init(FMLInitializationEvent event) {
-		Minecraft.getMinecraft().getRenderItem().getItemModelMesher()
-	    .register(Item.getItemFromBlock(copper_cable), 0, new ModelResourceLocation(this.MODID+":copper_cable", "inventory"));
-		
-		Minecraft.getMinecraft().getRenderItem().getItemModelMesher()
-	    .register(Item.getItemFromBlock(covered_copper_cable), 0, new ModelResourceLocation(this.MODID+":covered_copper_cable", "inventory"));
-		
-		Minecraft.getMinecraft().getRenderItem().getItemModelMesher()
-	    .register(Item.getItemFromBlock(tin_cable), 0, new ModelResourceLocation(this.MODID+":tin_cable", "inventory"));
-		
-		Minecraft.getMinecraft().getRenderItem().getItemModelMesher()
-	    .register(Item.getItemFromBlock(covered_tin_cable), 0, new ModelResourceLocation(this.MODID+":covered_tin_cable", "inventory"));
-		
-		Minecraft.getMinecraft().getRenderItem().getItemModelMesher()
-	    .register(Item.getItemFromBlock(silver_cable), 0, new ModelResourceLocation(this.MODID+":silver_cable", "inventory"));
-		
-		Minecraft.getMinecraft().getRenderItem().getItemModelMesher()
-	    .register(Item.getItemFromBlock(covered_silver_cable), 0, new ModelResourceLocation(this.MODID+":covered_silver_cable", "inventory"));
-		
-		Minecraft.getMinecraft().getRenderItem().getItemModelMesher()
-	    .register(Item.getItemFromBlock(gold_cable), 0, new ModelResourceLocation(this.MODID+":gold_cable", "inventory"));
-		
-		Minecraft.getMinecraft().getRenderItem().getItemModelMesher()
-	    .register(Item.getItemFromBlock(covered_gold_cable), 0, new ModelResourceLocation(this.MODID+":covered_gold_cable", "inventory"));
-		
-		Minecraft.getMinecraft().getRenderItem().getItemModelMesher()
-	    .register(Item.getItemFromBlock(pink_cable), 0, new ModelResourceLocation(this.MODID+":pink_cable", "inventory"));
-		
-		Minecraft.getMinecraft().getRenderItem().getItemModelMesher()
-	    .register(Item.getItemFromBlock(covered_pink_cable), 0, new ModelResourceLocation(this.MODID+":covered_pink_cable", "inventory"));
-		
-		Minecraft.getMinecraft().getRenderItem().getItemModelMesher()
-	    .register(Item.getItemFromBlock(ender_cable), 0, new ModelResourceLocation(this.MODID+":ender_cable", "inventory"));
-		
-		Minecraft.getMinecraft().getRenderItem().getItemModelMesher()
-	    .register(Item.getItemFromBlock(covered_ender_cable), 0, new ModelResourceLocation(this.MODID+":covered_ender_cable", "inventory"));
-		
-		Minecraft.getMinecraft().getRenderItem().getItemModelMesher()
-	    .register(Item.getItemFromBlock(optic_cable), 0, new ModelResourceLocation(this.MODID+":optic_cable", "inventory"));
-		
-		Minecraft.getMinecraft().getRenderItem().getItemModelMesher()
-	    .register(Item.getItemFromBlock(super_cable), 0, new ModelResourceLocation(this.MODID+":super_cable", "inventory"));
-		
-		Minecraft.getMinecraft().getRenderItem().getItemModelMesher()
-	    .register(Item.getItemFromBlock(covered_super_cable), 0, new ModelResourceLocation(this.MODID+":covered_super_cable", "inventory"));
-		
+		proxy.init(event);
 	}
 }
