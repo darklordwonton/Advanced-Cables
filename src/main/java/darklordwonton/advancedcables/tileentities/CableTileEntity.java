@@ -81,6 +81,12 @@ public class CableTileEntity extends TileEntity implements ITickable, IEnergyRec
 	
 	@Override
 	public int receiveEnergy(EnumFacing from, int maxReceive, boolean simulate) {
+		if (from == null) {
+			int energyReceived = storage.receiveEnergy(maxReceive, simulate);
+			if (this.storage.getEnergyStored() > this.maxCapacity)
+				melt();
+			return energyReceived;
+		}
 		if ((Integer)sides.get(from.getIndex()) < 2) {
 			int energyReceived = storage.receiveEnergy(maxReceive, simulate);
 			if (this.storage.getEnergyStored() > this.maxCapacity) {
@@ -107,6 +113,8 @@ public class CableTileEntity extends TileEntity implements ITickable, IEnergyRec
 	
 	@Override
 	public int extractEnergy(EnumFacing from, int maxExtract, boolean simulate) {
+		if (from == null)
+			return Math.max(0, storage.extractEnergy(maxExtract, simulate) - loss);
 		if ((Integer)sides.get(from.getIndex()) == 0 || (Integer)sides.get(from.getIndex()) == 2) {
 			return Math.max(0, storage.extractEnergy(maxExtract, simulate) - loss);
 		} else {
@@ -133,6 +141,9 @@ public class CableTileEntity extends TileEntity implements ITickable, IEnergyRec
 					if (tileEntity instanceof IEnergyProvider && ((IEnergyProvider)tileEntity).canConnectEnergy(side.getOpposite()) && this.canConnectEnergy(side)){
 						this.receiveEnergy(side, ((IEnergyProvider)tileEntity).extractEnergy(side.getOpposite(), ((IEnergyProvider)tileEntity).getMaxEnergyStored(side.getOpposite()), false), false);
 					}
+					if (tileEntity instanceof IEnergyStorage && ((IEnergyStorage)tileEntity).canExtract()) {
+						this.receiveEnergy(((IEnergyStorage)tileEntity).extractEnergy(((IEnergyStorage)tileEntity).getMaxEnergyStored(), false), false);
+					}
 				}
 			}
 		}
@@ -148,11 +159,11 @@ public class CableTileEntity extends TileEntity implements ITickable, IEnergyRec
 			if (!(sidesReceivedFrom.contains(side))) {
 				if (this.worldObj.getTileEntity(this.getPos().add(offset)) != null) {
 					TileEntity tileEntity = this.worldObj.getTileEntity(this.getPos().add(offset));
-					if (tileEntity instanceof IEnergyReceiver && ((IEnergyReceiver)tileEntity).canConnectEnergy(side.getOpposite())){
+					if ((tileEntity instanceof IEnergyReceiver && ((IEnergyReceiver)tileEntity).canConnectEnergy(side.getOpposite())) || (tileEntity instanceof IEnergyStorage && ((IEnergyStorage)tileEntity).canReceive())){
 						powerSplit++;
 						this.rendersides.add(this.sides.get(i));
 					} else {
-						if (tileEntity instanceof IEnergyConnection && ((IEnergyConnection) tileEntity).canConnectEnergy(side.getOpposite())) {
+						if ((tileEntity instanceof IEnergyConnection && ((IEnergyConnection) tileEntity).canConnectEnergy(side.getOpposite())) || tileEntity instanceof IEnergyStorage) {
 							this.rendersides.add(this.sides.get(i));
 						} else {
 							this.rendersides.add(3);
@@ -176,7 +187,13 @@ public class CableTileEntity extends TileEntity implements ITickable, IEnergyRec
 						TileEntity tileEntity = this.worldObj.getTileEntity(this.getPos().add(offset));
 						if (tileEntity instanceof IEnergyReceiver && ((IEnergyReceiver)tileEntity).canConnectEnergy(side.getOpposite())){
 							if ((Integer)sides.get(side.getIndex()) == 0 || (Integer)sides.get(side.getIndex()) == 2) {
-								if (this.extractEnergy(side, ((IEnergyReceiver) tileEntity).receiveEnergy(side.getOpposite(), energytotransmit - loss, false), false) >= energytotransmit - loss * 2) {
+								if (this.extractEnergy(side, ((IEnergyReceiver) tileEntity).receiveEnergy(side.getOpposite(), Math.max(0,energytotransmit - loss), false), false) >= energytotransmit - loss * 2) {
+									sidesPoweredTo.add(side);
+								}
+							}
+						} else if (tileEntity instanceof IEnergyStorage && ((IEnergyStorage)tileEntity).canReceive()) {
+							if ((Integer)sides.get(side.getIndex()) == 0 || (Integer)sides.get(side.getIndex()) == 2) {
+								if (this.extractEnergy(((IEnergyStorage) tileEntity).receiveEnergy(Math.max(0,energytotransmit - loss), false), false) >= energytotransmit - loss * 2) {
 									sidesPoweredTo.add(side);
 								}
 							}
@@ -194,9 +211,15 @@ public class CableTileEntity extends TileEntity implements ITickable, IEnergyRec
 						TileEntity tileEntity = this.worldObj.getTileEntity(this.getPos().add(offset));
 						if (tileEntity instanceof IEnergyReceiver && ((IEnergyReceiver)tileEntity).canConnectEnergy(side.getOpposite())){
 							if ((Integer)sides.get(side.getIndex()) == 0 || (Integer)sides.get(side.getIndex()) == 2) {
-								if (this.extractEnergy(side, ((IEnergyReceiver) tileEntity).receiveEnergy(side.getOpposite(), energytotransmit - loss, false), false) >= energytotransmit - loss - 1) {
+								if (this.extractEnergy(side, ((IEnergyReceiver) tileEntity).receiveEnergy(side.getOpposite(), Math.max(0,energytotransmit - loss), false), false) >= energytotransmit - loss * 2) {
 									sidesPoweredTo.add(side);
-								}	
+								}
+							}
+						} else if (tileEntity instanceof IEnergyStorage && ((IEnergyStorage)tileEntity).canReceive()) {
+							if ((Integer)sides.get(side.getIndex()) == 0 || (Integer)sides.get(side.getIndex()) == 2) {
+								if (this.extractEnergy(((IEnergyStorage) tileEntity).receiveEnergy(Math.max(0,energytotransmit - loss), false), false) >= energytotransmit - loss * 2) {
+									sidesPoweredTo.add(side);
+								}
 							}
 						}
 					}
@@ -213,7 +236,15 @@ public class CableTileEntity extends TileEntity implements ITickable, IEnergyRec
 						TileEntity tileEntity = this.worldObj.getTileEntity(this.getPos().add(offset));
 						if (tileEntity instanceof IEnergyReceiver && ((IEnergyReceiver)tileEntity).canConnectEnergy(side.getOpposite())){
 							if ((Integer)sides.get(side.getIndex()) == 0 || (Integer)sides.get(side.getIndex()) == 2) {
-								this.extractEnergy(side, ((IEnergyReceiver) tileEntity).receiveEnergy(side.getOpposite(), this.extractEnergy(side, energytotransmit, true), false), false);
+								if (this.extractEnergy(side, ((IEnergyReceiver) tileEntity).receiveEnergy(side.getOpposite(), Math.max(0,energytotransmit - loss), false), false) >= energytotransmit - loss * 2) {
+									sidesPoweredTo.add(side);
+								}
+							}
+						} else if (tileEntity instanceof IEnergyStorage && ((IEnergyStorage)tileEntity).canReceive()) {
+							if ((Integer)sides.get(side.getIndex()) == 0 || (Integer)sides.get(side.getIndex()) == 2) {
+								if (this.extractEnergy(((IEnergyStorage) tileEntity).receiveEnergy(Math.max(0,energytotransmit - loss), false), false) >= energytotransmit - loss * 2) {
+									sidesPoweredTo.add(side);
+								}
 							}
 						}
 					}
