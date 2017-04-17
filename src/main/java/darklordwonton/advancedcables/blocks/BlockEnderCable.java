@@ -1,6 +1,8 @@
 package darklordwonton.advancedcables.blocks;
 
+import darklordwonton.advancedcables.ConfigHandler;
 import darklordwonton.advancedcables.tileentities.CableTileEntity;
+import darklordwonton.advancedcables.util.EnumCableType;
 import net.minecraft.block.Block;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.material.Material;
@@ -33,7 +35,7 @@ public class BlockEnderCable extends BaseCableBlock implements ITileEntityProvid
     public void onBlockPlacedBy(World world, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack)
     {
 		CableTileEntity tileEntity = (CableTileEntity) world.getTileEntity(pos);
-		tileEntity.init(16384, 18, false);
+		tileEntity.init(EnumCableType.ENDER, false);
 		super.onBlockPlacedBy(world, pos, state, placer, stack);
     }
 

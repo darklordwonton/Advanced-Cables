@@ -1,5 +1,6 @@
 death.attack.electric=%1$s was electrocuted
 death.attack.electric.player=%1$s was electrocuted whilst fighting %2$s
+item.voltmeter.name=Voltmeter
 tile.copper_cable.name=Copper Cable
 tile.covered_copper_cable.name=Covered Copper Cable
 tile.tin_cable.name=Tin Cable

@@ -2,6 +2,7 @@ package darklordwonton.advancedcables.items;
 
 import java.util.List;
 
+import darklordwonton.advancedcables.ConfigHandler;
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemBlock;
@@ -16,7 +17,10 @@ public class ItemEnderCable extends ItemBlock {
 
 	@Override
 	public void addInformation(ItemStack stack, EntityPlayer player, List<String> tooltip, boolean advanced) {
-		tooltip.add("Max Transfer: 16,384 rf/t");
-		tooltip.add("Loss: 18 rf/b");
+		tooltip.add("Max Transfer: " + ConfigHandler.enderMax + " rf/t");
+		if (ConfigHandler.enderLoss == 0)
+			tooltip.add("No Loss");
+		else
+			tooltip.add("Loss: " + ConfigHandler.enderLoss + " rf/b");
 	}
 }

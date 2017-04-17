@@ -1,7 +1,9 @@
 package darklordwonton.advancedcables.tileentities;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Nullable;
 
@@ -12,6 +14,8 @@ import cofh.api.energy.IEnergyProvider;
 import cofh.api.energy.IEnergyReceiver;
 import cofh.api.energy.TileEnergyHandler;
 import darklordwonton.advancedcables.AdvancedCablesMain;
+import darklordwonton.advancedcables.ConfigHandler;
+import darklordwonton.advancedcables.util.EnumCableType;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
@@ -41,16 +45,37 @@ import net.minecraftforge.energy.IEnergyStorage;
 public class CableTileEntity extends TileEntity implements ITickable, IEnergyReceiver, IEnergyProvider, IEnergyStorage {
 	
 	protected EnergyStorage storage = new EnergyStorage(Integer.MAX_VALUE);
-	public int maxCapacity;
-	public int loss;
+	private EnumCableType cableType;
+	private int maxCapacity;
+	private int loss;
 	public boolean covered;
-	public List sidesReceivedFrom = new ArrayList();
-	public List sides = new IntArrayList();
+	private List sidesReceivedFrom = new ArrayList();
+	private List sides = new IntArrayList();
 	public List rendersides = new IntArrayList();
 	public List boxes = new ArrayList();
-	public List<EntityLivingBase> toBeToBeShocked = new ArrayList(); 
-	public List<EntityLivingBase> toBeShocked = new ArrayList(); 
-	public int currentPower;
+	private List<EntityLivingBase> toBeToBeShocked = new ArrayList(); 
+	private List<EntityLivingBase> toBeShocked = new ArrayList(); 
+	private int tempPower = 0;
+	private int currentPower = 0;
+	
+	private static Map<EnumCableType, Integer> losses = new HashMap<EnumCableType, Integer>();
+	private static Map<EnumCableType, Integer> capacities = new HashMap<EnumCableType, Integer>();
+	static {
+		losses.put(EnumCableType.COPPER, ConfigHandler.copperLoss);
+		capacities.put(EnumCableType.COPPER, ConfigHandler.copperMax);
+		losses.put(EnumCableType.TIN, ConfigHandler.tinLoss);
+		capacities.put(EnumCableType.TIN, ConfigHandler.tinMax);
+		losses.put(EnumCableType.SILVER, ConfigHandler.silverLoss);
+		capacities.put(EnumCableType.SILVER, ConfigHandler.silverMax);
+		losses.put(EnumCableType.GOLD, ConfigHandler.goldLoss);
+		capacities.put(EnumCableType.GOLD, ConfigHandler.goldMax);
+		losses.put(EnumCableType.ENDER, ConfigHandler.enderLoss);
+		capacities.put(EnumCableType.ENDER, ConfigHandler.enderMax);
+		losses.put(EnumCableType.OPTIC, ConfigHandler.opticLoss);
+		capacities.put(EnumCableType.OPTIC, ConfigHandler.opticMax);
+		losses.put(EnumCableType.SUPER, ConfigHandler.superLoss);
+		capacities.put(EnumCableType.SUPER, ConfigHandler.superMax);
+	}
 	
 	public static AxisAlignedBB[] coveredBoxes = {new AxisAlignedBB(0.25,0,0.25,0.75,0.25,0.75),
 			new AxisAlignedBB(0.25,0.75,0.25,0.75,1,0.75),
@@ -68,14 +93,21 @@ public class CableTileEntity extends TileEntity implements ITickable, IEnergyRec
 			};
 	public static String[] sideStates = {"no restrictions", "input only", "output only", "disabled"};
 	
-	public void init (int cap, int loss, boolean covered) {
-		this.maxCapacity = cap;
-		this.loss = loss;
+	public void init (EnumCableType type, boolean covered) {
+		this.maxCapacity = capacities.get(type);
+		if (covered)
+			this.loss = (int) (losses.get(type) * ConfigHandler.coveredModifier + 0.5);
+		else
+			this.loss = losses.get(type);
 		this.covered = covered;
+		this.cableType = type;
 		if (sides.size() != 6) {
 			for (int i = 0; i < 6; i++) {
 				sides.add(0);
 			}
+		}
+		if (!ConfigHandler.cableMelting) {
+			storage.setCapacity(maxCapacity);
 		}
 	}
 	
@@ -85,6 +117,9 @@ public class CableTileEntity extends TileEntity implements ITickable, IEnergyRec
 			int energyReceived = storage.receiveEnergy(maxReceive, simulate);
 			if (this.storage.getEnergyStored() > this.maxCapacity)
 				melt();
+			tempPower += energyReceived;
+			if (tempPower > maxCapacity)
+				tempPower = maxCapacity;
 			return energyReceived;
 		}
 		if ((Integer)sides.get(from.getIndex()) < 2) {
@@ -97,6 +132,9 @@ public class CableTileEntity extends TileEntity implements ITickable, IEnergyRec
 			if (energyReceived > 0) {
 				sidesReceivedFrom.add(from);
 			}
+			tempPower += energyReceived;
+			if (tempPower > maxCapacity)
+				tempPower = maxCapacity;
 			return energyReceived;
 		} else {
 			return 0;
@@ -147,7 +185,8 @@ public class CableTileEntity extends TileEntity implements ITickable, IEnergyRec
 				}
 			}
 		}
-		this.currentPower = this.getEnergyStored(null);
+		currentPower = tempPower;
+		tempPower = 0;
 		if (!covered) {
 			if (this.storage.getEnergyStored() > 0) {
 				this.shockEntities();
@@ -365,11 +404,18 @@ public class CableTileEntity extends TileEntity implements ITickable, IEnergyRec
 		super.readFromNBT(nbt);
 		storage.readFromNBT(nbt);
 		sides.clear();
-		this.maxCapacity = nbt.getInteger("maxCapacity");
-		this.loss = nbt.getInteger("loss");
 		this.covered = nbt.getBoolean("covered");
+		this.cableType = EnumCableType.valueOf(nbt.getString("type"));
+		this.maxCapacity = capacities.get(cableType);
+		if (covered)
+			this.loss = (int) (losses.get(cableType) * ConfigHandler.coveredModifier + 0.5);
+		else
+			this.loss = losses.get(cableType);
 		for (int i = 0; i < 6; i++) {
 			sides.add(nbt.getIntArray("sides")[i]);
+		}
+		if (!ConfigHandler.cableMelting) {
+			storage.setCapacity(maxCapacity);
 		}
 	}
 
@@ -382,9 +428,8 @@ public class CableTileEntity extends TileEntity implements ITickable, IEnergyRec
 			sidesintarray[i] = ((Integer)sides.get(i)).intValue();
 		};
 		nbt.setIntArray("sides", sidesintarray);
-		nbt.setInteger("maxCapacity", this.maxCapacity);
-		nbt.setInteger("loss", this.loss);
 		nbt.setBoolean("covered", this.covered);
+		nbt.setString("type", cableType.toString());
 		return nbt;
 	}
 

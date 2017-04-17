@@ -1,6 +1,8 @@
 package darklordwonton.advancedcables.blocks;
 
+import darklordwonton.advancedcables.ConfigHandler;
 import darklordwonton.advancedcables.tileentities.CableTileEntity;
+import darklordwonton.advancedcables.util.EnumCableType;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -27,7 +29,7 @@ public class BlockCoveredSuperCable extends BaseCableBlock implements ITileEntit
     public void onBlockPlacedBy(World world, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack)
     {
 		CableTileEntity tileEntity = (CableTileEntity) world.getTileEntity(pos);
-		tileEntity.init(100000000, 350, true);
+		tileEntity.init(EnumCableType.SUPER, true);
 		super.onBlockPlacedBy(world, pos, state, placer, stack);
     }
 

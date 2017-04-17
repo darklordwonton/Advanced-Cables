@@ -61,6 +61,8 @@ public class ClientProxy extends CommonProxy {
 		Minecraft.getMinecraft().getRenderItem().getItemModelMesher()
 	    .register(Item.getItemFromBlock(AdvancedCablesMain.covered_super_cable), 0, new ModelResourceLocation(AdvancedCablesMain.MODID+":covered_super_cable", "inventory"));
         
+		Minecraft.getMinecraft().getRenderItem().getItemModelMesher()
+	    .register(AdvancedCablesMain.voltmeter, 0, new ModelResourceLocation(AdvancedCablesMain.MODID+":voltmeter", "inventory"));
     }
 
     @Override

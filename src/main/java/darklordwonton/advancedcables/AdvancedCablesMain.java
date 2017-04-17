@@ -41,7 +41,7 @@ public class AdvancedCablesMain {
 	public static CommonProxy proxy;
 	
 	static final String MODID = "advancedcables";
-	static final String VERSION = "2.0.0";
+	static final String VERSION = "2.1.0";
 	static final String NAME = "advancedcables";
 	
 	public static final DamageSource electrocution = new DamageSource("electric")
@@ -183,6 +183,12 @@ public class AdvancedCablesMain {
 	static Item ioptic_cable = new ItemOpticCable(optic_cable)
 			.setRegistryName("optic_cable")
 			.setUnlocalizedName("optic_cable");
+	
+	static Item voltmeter = new ItemVoltmeter()
+			.setRegistryName("voltmeter")
+			.setUnlocalizedName("voltmeter")
+			.setCreativeTab(tabadvancedcables)
+			.setMaxStackSize(1);
 	
 	
 	@EventHandler

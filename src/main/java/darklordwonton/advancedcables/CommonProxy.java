@@ -1,5 +1,7 @@
 package darklordwonton.advancedcables;
 
+import java.io.File;
+
 import darklordwonton.advancedcables.tileentities.CableTileEntity;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
@@ -11,7 +13,10 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 
 public class CommonProxy {
+	
 	public void preinit(FMLPreInitializationEvent event) {
+		ConfigHandler.init(new File(event.getModConfigurationDirectory(), AdvancedCablesMain.MODID + ".cfg"));
+		
 		GameRegistry.registerTileEntity(CableTileEntity.class, "copper_cable");
 		GameRegistry.registerTileEntity(CableTileEntity.class, "covered_copper_cable");
 		GameRegistry.registerTileEntity(CableTileEntity.class, "tin_cable");
@@ -60,7 +65,9 @@ public class CommonProxy {
 		GameRegistry.register(AdvancedCablesMain.isuper_cable);
 		GameRegistry.register(AdvancedCablesMain.covered_super_cable);
 		GameRegistry.register(AdvancedCablesMain.icovered_super_cable);
+		GameRegistry.register(AdvancedCablesMain.voltmeter);
 	}
+	
 	public void init(FMLInitializationEvent event) {
 		ShapedOreRecipe copperCable = new ShapedOreRecipe(new ItemStack(AdvancedCablesMain.icopper_cable, 6), "AAA", 'A', "ingotCopper");
 		GameRegistry.addRecipe(copperCable);
@@ -85,7 +92,10 @@ public class CommonProxy {
 		GameRegistry.addShapelessRecipe(new ItemStack(AdvancedCablesMain.icovered_pink_cable), AdvancedCablesMain.ipink_cable, Items.CLAY_BALL);
 		GameRegistry.addShapelessRecipe(new ItemStack(AdvancedCablesMain.icovered_ender_cable), AdvancedCablesMain.iender_cable, Items.CLAY_BALL);
 		GameRegistry.addShapelessRecipe(new ItemStack(AdvancedCablesMain.icovered_super_cable), AdvancedCablesMain.isuper_cable, Items.CLAY_BALL);
+		ShapedOreRecipe vmRecipe = new ShapedOreRecipe(AdvancedCablesMain.voltmeter, "ABA", "ACA", "D D", 'A', "ingotGold", 'B', Items.COMPASS, 'C', Items.COMPARATOR, 'D', AdvancedCablesMain.icopper_cable);
+		GameRegistry.addRecipe(vmRecipe);
 	}
+	
 	public void postinit(FMLPostInitializationEvent event) {
 		
 	}
